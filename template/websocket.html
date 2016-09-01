@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="http://cdn.bootcss.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="http://cdn.bootcss.com/bootstrap/3.2.0/css/bootstrap-theme.min.css" rel="stylesheet">
+    <script src="http://cdn.bootcss.com/jquery/2.1.1/jquery.min.js"></script>
+    <script src="http://cdn.bootcss.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="{{ static_url("laydate/laydate.js") }}" type="text/javascript"></script>
+<script>
+    function scrollEventTest() {
+        if ($("#textarea").scrollTop() == 0) {
+            console.log("scrolled to top")
+            //ws.send("send for more content command")
+        }
+    }
+    var ws = new WebSocket("ws://127.0.0.1:8200/send");
+    ws.onmessage = function(event) {
+        var scrollHeight = $("#textarea")[0].scrollHeight;
+        var height = $("#textarea").height();
+        //console.log("scrollHight:" + scrollHeight);
+        //console.log("scrollTop:" + $("#textarea").scrollTop())
+        //console.log("height:" + $("#textarea").height())
+        if ($("#textarea").scrollTop() > scrollHeight - height - 5){
+            $("#textarea").val($("#textarea").val()+event.data);
+            $("#textarea").scrollTop($("#textarea")[0].scrollHeight);
+        }
+        else {
+            $("#textarea").val($("#textarea").val()+event.data);
+        }
+
+    };
+
+    function send() {
+         var data = {
+                input:$("#input_data").val(),
+               };
+    $("#message").empty();
+    ws.send(JSON.stringify(data));
+    $("#message").append('<div class="panel-body"><p>');
+}
+</script>
+
+</head>
+<body>
+<div id="top">
+<p>Download Logs of Apps:</p>
+</div>
+<div id="div1">
+<form method="post">
+选择应用:
+<select name="appname">
+{% for server_name in servers %}
+    <option>{{ server_name }}</option>
+ {% end %}
+</select>
+日志时间:<input id="hello" name="logtime" class="laydate-icon" />
+<script>
+    laydate({
+        elem: '#hello',
+        event: 'focus'
+});
+    laydate.skin('danlan');
+    $("#hello").val(laydate.now());
+</script>
+<input type="submit" value="Download" />
+</form>
+</div>
+<div id="message">
+</div>
+<script>
+    $("#message").html("</br>{{ message }}");
+    $("#message").css("color","red");
+</script>
+<div id="time_filter_log">
+  start time <input type="text" size="2">点<input type="text" size="2">
+    分 end time <input type="text" size="2">点<input type="text" size="2">分 <button type="button">显示</button>
+</div>
+<div id="tail log">
+    <textarea onscroll="scrollEventTest()" id="textarea" rows=10 cols=100 style="overflow-y:scroll;overflow-x:hidden;"></textarea>
+</div>
+
+<div id="test">
+  <form class="form-horizontal" role="form">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h5 class="panel-title">>>输入</h5>
+      </div>
+      <div class="panel-body">
+        <div class="form-group">
+          <div class="col-md-8">
+            <input type="text" class="form-control" id="input_data" value="">
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-md-8">
+            <button type="submit" class="btn btn-success" id="input_btn" onclick="send();">发送</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h5 class="panel-title">>> 输出</h5>
+    </div>
+    <div class="panel-body">
+      <div id="message"></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

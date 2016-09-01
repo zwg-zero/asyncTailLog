@@ -1,0 +1,86 @@
+server_list:
+    web-1:
+        ip: 172.16.100.200
+        user: zhouwg_7
+        logpath: /app/jbp_web/logs
+        logname: web.log
+    web-2:
+        ip: 172.16.100.201
+        user: zhouwg_7
+        logpath: /app/jbp_web/logs
+        logname: web.log
+    xiaodai-1:
+        ip: 172.16.100.200
+        user: zhouwg_7
+        logpath: /app/jbp_xiaodai/logs
+        logname: xiaodai.log
+    xiaodai-2:
+        ip: 172.16.100.201
+        user: zhouwg_7
+        logpath: /app/jbp_xiaodai/logs
+        logname: xiaodai.log
+    wangdai-1:
+        ip: 172.16.100.200
+        user: zhouwg_7
+        logpath: /app/jbp_wangdai/logs
+        logname: wangdai.log
+    wangdai-2:
+        ip: 172.16.100.201
+        user: zhouwg_7
+        logpath: /app/jbp_wangdai/logs
+        logname: wangdai.log
+    console-1:
+        ip: 172.16.100.200
+        user: zhouwg_7
+        logpath: /app/jbp_console/logs
+        logname: console.log
+    console-2:
+        ip: 172.16.100.201
+        user: zhouwg_7
+        logpath: /app/jbp_console/logs
+        logname: console.log
+    job:
+        ip: 172.16.100.200
+        user: zhouwg_7
+        logpath: /app/jbp_job/logs
+        logname: job.log
+    safedou-1:
+        ip: 172.16.100.200
+        user: zhouwg_7
+        logpath: /app/jbp_safe/logs
+        logname: safe.log
+    safedou-2:
+        ip: 172.16.100.201
+        user: zhouwg_7
+        logpath: /app/jbp_safe/logs
+        logname: safe.log
+    app-1:
+        ip: 172.16.100.200
+        user: zhouwg_7
+        logpath: /app/jbp_app/logs
+        logname: app.log
+    app-2:
+        ip: 172.16.100.201
+        user: zhouwg_7
+        logpath: /app/jbp_app/logs
+        logname: app.log
+    libra-1:
+        ip: 172.16.100.200
+        user: zhouwg_7
+        logpath: /app/jbp_libra/logs
+        logname: libra.log
+    libra-2:
+        ip: 172.16.100.201
+        user: zhouwg_7
+        logpath: /app/jbp_libra/logs
+        logname: libra.log
+    ohuanggua-1:
+        ip: 172.16.100.206
+        user: zhouwg_7
+        logpath: /app/jbp_ohuanggua/logs
+        logname: ohuanggua.log
+    ohuanggua-2:
+        ip: 172.16.100.207
+        user: zhouwg_7
+        logpath: /app/jbp_ohuanggua/logs
+        logname: ohuanggua.log
