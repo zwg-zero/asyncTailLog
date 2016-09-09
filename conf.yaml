@@ -1,86 +1,205 @@
 server_list:
-    web-1:
+    jbp-web-1:
         ip: 172.16.100.200
+        port: 22
         user: zhouwg_7
         logpath: /app/jbp_web/logs
         logname: web.log
-    web-2:
+    jbp-web-1-access:
+        ip: 172.16.100.200
+        port: 22
+        user: zhouwg_7
+        logpath: /app/jbp_web/logs
+        logname: access
+    jbp-web-2:
         ip: 172.16.100.201
+        port: 22
         user: zhouwg_7
         logpath: /app/jbp_web/logs
         logname: web.log
-    xiaodai-1:
+    jbp-web-2-access:
+        ip: 172.16.100.201
+        port: 22
+        user: zhouwg_7
+        logpath: /app/jbp_web/logs
+        logname: access
+    jbp-xiaodai-1:
         ip: 172.16.100.200
+        port: 22
         user: zhouwg_7
         logpath: /app/jbp_xiaodai/logs
         logname: xiaodai.log
-    xiaodai-2:
+    jbp-xiaodai-1-access:
+        ip: 172.16.100.200
+        port: 22
+        user: zhouwg_7
+        logpath: /app/jbp_xiaodai/logs
+        logname: access
+    jbp-xiaodai-2:
         ip: 172.16.100.201
+        port: 22
         user: zhouwg_7
         logpath: /app/jbp_xiaodai/logs
         logname: xiaodai.log
-    wangdai-1:
+    jbp-xiaodai-2-access:
+        ip: 172.16.100.201
+        port: 22
+        user: zhouwg_7
+        logpath: /app/jbp_xiaodai/logs
+        logname: access
+    jbp-wangdai-1:
         ip: 172.16.100.200
+        port: 22
         user: zhouwg_7
         logpath: /app/jbp_wangdai/logs
         logname: wangdai.log
-    wangdai-2:
+    jbp-wangdai-1-access:
+        ip: 172.16.100.200
+        port: 22
+        user: zhouwg_7
+        logpath: /app/jbp_wangdai/logs
+        logname: access
+    jbp-wangdai-2:
         ip: 172.16.100.201
+        port: 22
         user: zhouwg_7
         logpath: /app/jbp_wangdai/logs
         logname: wangdai.log
-    console-1:
-        ip: 172.16.100.200
-        user: zhouwg_7
-        logpath: /app/jbp_console/logs
-        logname: console.log
-    console-2:
+    jbp-wangdai-2-access:
         ip: 172.16.100.201
+        port: 22
+        user: zhouwg_7
+        logpath: /app/jbp_wangdai/logs
+        logname: access
+    jbp-console-1:
+        ip: 172.16.100.200
+        port: 22
         user: zhouwg_7
         logpath: /app/jbp_console/logs
         logname: console.log
-    job:
+    jbp-console-1-access:
         ip: 172.16.100.200
+        port: 22
+        user: zhouwg_7
+        logpath: /app/jbp_console/logs
+        logname: access
+    jbp-console-2:
+        ip: 172.16.100.201
+        port: 22
+        user: zhouwg_7
+        logpath: /app/jbp_console/logs
+        logname: console.log
+    jbp-console-2-access:
+        ip: 172.16.100.201
+        port: 22
+        user: zhouwg_7
+        logpath: /app/jbp_console/logs
+        logname: access
+    jbp-job:
+        ip: 172.16.100.200
+        port: 22
         user: zhouwg_7
         logpath: /app/jbp_job/logs
         logname: job.log
-    safedou-1:
+    jbp-job-access:
         ip: 172.16.100.200
+        port: 22
+        user: zhouwg_7
+        logpath: /app/jbp_job/logs
+        logname: access
+    jbp-safedou-1:
+        ip: 172.16.100.200
+        port: 22
         user: zhouwg_7
         logpath: /app/jbp_safe/logs
         logname: safe.log
-    safedou-2:
+    jbp-safedou-1-access:
+        ip: 172.16.100.200
+        port: 22
+        user: zhouwg_7
+        logpath: /app/jbp_safe/logs
+        logname: access
+    jbp-safedou-2:
         ip: 172.16.100.201
+        port: 22
         user: zhouwg_7
         logpath: /app/jbp_safe/logs
         logname: safe.log
-    app-1:
+    jbp-safedou-2-access:
+        ip: 172.16.100.201
+        port: 22
+        user: zhouwg_7
+        logpath: /app/jbp_safe/logs
+        logname: access
+    jbp-app-1:
         ip: 172.16.100.200
+        port: 22
         user: zhouwg_7
         logpath: /app/jbp_app/logs
         logname: app.log
-    app-2:
+    jbp-app-1-access:
+        ip: 172.16.100.200
+        port: 22
+        user: zhouwg_7
+        logpath: /app/jbp_app/logs
+        logname: access
+    jbp-app-2:
         ip: 172.16.100.201
+        port: 22
         user: zhouwg_7
         logpath: /app/jbp_app/logs
         logname: app.log
-    libra-1:
-        ip: 172.16.100.200
-        user: zhouwg_7
-        logpath: /app/jbp_libra/logs
-        logname: libra.log
-    libra-2:
+    jbp-app-2-access:
         ip: 172.16.100.201
+        port: 22
+        user: zhouwg_7
+        logpath: /app/jbp_app/logs
+        logname: access
+    jbp-libra-1:
+        ip: 172.16.100.200
+        port: 22
         user: zhouwg_7
         logpath: /app/jbp_libra/logs
         logname: libra.log
-    ohuanggua-1:
+    jbp-libra-1-access:
+        ip: 172.16.100.200
+        port: 22
+        user: zhouwg_7
+        logpath: /app/jbp_libra/logs
+        logname: access
+    jbp-libra-2:
+        ip: 172.16.100.201
+        port: 22
+        user: zhouwg_7
+        logpath: /app/jbp_libra/logs
+        logname: libra.log
+    jbp-libra-2-access:
+        ip: 172.16.100.201
+        port: 22
+        user: zhouwg_7
+        logpath: /app/jbp_libra/logs
+        logname: access
+    ohg-web-1:
         ip: 172.16.100.206
+        port: 22
         user: zhouwg_7
-        logpath: /app/jbp_ohuanggua/logs
+        logpath: /app/ohg_web/logs
         logname: ohuanggua.log
-    ohuanggua-2:
+    ohg-web-1-access:
+        ip: 172.16.100.206
+        port: 22
+        user: zhouwg_7
+        logpath: /app/ohg_web/logs
+        logname: access
+    ohg-web-2:
         ip: 172.16.100.207
+        port: 22
         user: zhouwg_7
-        logpath: /app/jbp_ohuanggua/logs
+        logpath: /app/ohg_web/logs
         logname: ohuanggua.log
+    ohg-web-2-access:
+        ip: 172.16.100.207
+        port: 22
+        user: zhouwg_7
+        logpath: /app/ohg_web/logs
+        logname: access

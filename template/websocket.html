@@ -10,104 +10,214 @@
 <script>
     function scrollEventTest() {
         if ($("#textarea").scrollTop() == 0) {
-            console.log("scrolled to top")
-            //ws.send("send for more content command")
+            console.log("scrolled to top");
+            if (is_scrollable) {
+                console.log("send more_content command");
+                var app_name = $("#appname option:selected").text();
+                data = {"command": "more_content", "app_name": app_name};
+                ws.send(JSON.stringify(data));
+                }
         }
     }
-    var ws = new WebSocket("ws://127.0.0.1:8200/send");
-    ws.onmessage = function(event) {
-        var scrollHeight = $("#textarea")[0].scrollHeight;
-        var height = $("#textarea").height();
-        //console.log("scrollHight:" + scrollHeight);
-        //console.log("scrollTop:" + $("#textarea").scrollTop())
-        //console.log("height:" + $("#textarea").height())
-        if ($("#textarea").scrollTop() > scrollHeight - height - 5){
-            $("#textarea").val($("#textarea").val()+event.data);
-            $("#textarea").scrollTop($("#textarea")[0].scrollHeight);
+    function stopTail() {
+        is_scrollable = false;
+        ws.send(JSON.stringify({"command": "stop_tail"}));
+        $("#textarea").val($("#textarea").val() + "***** Tail was stopped! *****\n")
+    }
+    function startTail_0(){
+        if (window.ws) {
+            console.log("in startTail_0, ws status: " + ws.readyState)
+            if (ws.readyState == 1) {
+                startTail();
+            }
+            else if (ws.readyState == 0 || ws.readyState == 2){
+                window.setTimeout(startTail_0, 1000);
+            }
+            else if (ws.readyState == 3) {
+                startWebSocket();
+                window.setTimeout(startTail_0, 1000);
+            }
         }
         else {
-            $("#textarea").val($("#textarea").val()+event.data);
+            startWebSocket();
+            window.setTimeout(startTail_0, 1000);
         }
+    }
+    function startTail(){
+        console.log("in startTail");
+        var app_name = $("#appname option:selected").text();
+        var date = $("#hello").val();
+        var data = {"command": "start_tail", "app_name": app_name, "date": date};
+        ws.send(JSON.stringify(data));
+    }
+    function filterLog_0(){
+        if (window.ws) {
+            console.log("in filterLog_0, ws status: " + ws.readyState)
+            if (ws.readyState == 1) {
+                filterLog();
+            }
+            else if (ws.readyState == 0 || ws.readyState == 2){
+                window.setTimeout(filterLog_0, 1000);
+            }
+            else if (ws.readyState == 3) {
+                startWebSocket();
+                window.setTimeout(filterLog_0, 1000);
+            }
+        }
+        else {
+            startWebSocket();
+            window.setTimeout(filterLog_0, 1000);
+        }
+    }
+    function filterLog() {
+        is_scrollable = false;
+        var appName = $("#appname option:selected").text();
+        var date = $("#hello").val();
+        var data = {"command": "start_tail", "app_name": appName, "date": date};
+        var startTimeHour = $("#start_time_hour").val();
+        var startTimeMin = $("#start_time_min").val();
+        var endTimeHour = $("#end_time_hour").val();
+        var endTimeMin = $("#end_time_min").val();
+        var pattHour=new RegExp("^(([01][0-9])|(2[0-4]))$");
+        var pattMin=new RegExp("^[0-5][0-9]$");
+        if (!pattHour.test(startTimeHour) || !pattHour.test(endTimeHour) || !pattMin.test(startTimeMin) ||
+            !pattMin.test(endTimeMin)){
+            $("#textarea").val("******* Start Time and End Time Format Should Like: 08:00 13:00 *********\n");
+            return false;
+        }
+        if ((!startTimeHour || !endTimeHour) || (Number(startTimeHour)>Number(endTimeHour))){
+            is_scrollable = false;
+            $("#textarea").val("******* start time and end time format should like: 08:00 24:00 ********\n");
+            return false;
+        }
+        var startTime = startTimeHour + ":" + startTimeMin;
+        var endTime = endTimeHour + ":" + endTimeMin;
+        var data = {"command": "filter_log", "app_name": appName, "date": date,
+                    "start_time": startTime, "end_time": endTime};
+        ws.send(JSON.stringify(data));
+    }
 
-    };
-
+    function startWebSocket(){
+        ws = new WebSocket("ws://127.0.0.1:8200/send");
+        is_scrollable = true;
+        ws.onmessage = function(event) {
+            var content = JSON.parse(event.data);
+            switch (content.status) {
+                case "error":
+                    console.log("in error")
+                    console.log("setting disable scroll")
+                    is_scrollable = false;
+                    $("#textarea").val();
+                    $("#textarea").val(content.message);
+                    break;
+                case "start_tail":
+                    console.log("in start_tail");
+                    is_scrollable = true;
+                    console.log("setting enable scroll")
+                    var scrollHeight = $("#textarea")[0].scrollHeight;
+                    var height = $("#textarea").height();
+                    //console.log("scrollHight:" + scrollHeight);
+                    //console.log("scrollTop:" + $("#textarea").scrollTop())
+                    //console.log("height:" + $("#textarea").height())
+                    if ($("#textarea").scrollTop() > scrollHeight - height - 5){
+                        $("#textarea").val($("#textarea").val()+content.message);
+                        $("#textarea").scrollTop($("#textarea")[0].scrollHeight);
+                    }
+                    else {
+                        $("#textarea").val($("#textarea").val()+content.message);
+                    }
+                    break;
+                case "more_content":
+                    console.log("in more_content");
+                    var scrollHeight_o = $("#textarea")[0].scrollHeight;
+                    $("#textarea").val(content.message+$("#textarea").val());
+                    var scroll_top = $("#textarea")[0].scrollHeight-scrollHeight_o;
+                    console.log(scroll_top)
+                    $("#textarea").scrollTop(scroll_top);
+                    break;
+                case "filter_log":
+                    console.log("in filter_log");
+                    //$("#textarea").val("waiting ...");
+                    $("#textarea").val(content.message);
+                    break;
+            }
+        };
+    }
     function send() {
-         var data = {
+        var data = {
                 input:$("#input_data").val(),
                };
-    $("#message").empty();
-    ws.send(JSON.stringify(data));
-    $("#message").append('<div class="panel-body"><p>');
-}
+        $("#message").empty();
+        ws.send(JSON.stringify(data));
+        $("#message").append('<div class="panel-body"><p>');
+    }
 </script>
-
+<style type="text/css">
+    .mt-20 {margin-top:10px;}
+</style>
 </head>
 <body>
-<div id="top">
-<p>Download Logs of Apps:</p>
+<div class="container">
+<div class="row mt-20" id="top">
+<h2>Download Logs of Apps:</h2>
 </div>
-<div id="div1">
-<form method="post">
-选择应用:
-<select name="appname">
-{% for server_name in servers %}
-    <option>{{ server_name }}</option>
- {% end %}
-</select>
-日志时间:<input id="hello" name="logtime" class="laydate-icon" />
-<script>
-    laydate({
-        elem: '#hello',
-        event: 'focus'
-});
-    laydate.skin('danlan');
-    $("#hello").val(laydate.now());
-</script>
-<input type="submit" value="Download" />
-</form>
-</div>
-<div id="message">
-</div>
-<script>
-    $("#message").html("</br>{{ message }}");
-    $("#message").css("color","red");
-</script>
-<div id="time_filter_log">
-  start time <input type="text" size="2">点<input type="text" size="2">
-    分 end time <input type="text" size="2">点<input type="text" size="2">分 <button type="button">显示</button>
-</div>
-<div id="tail log">
-    <textarea onscroll="scrollEventTest()" id="textarea" rows=10 cols=100 style="overflow-y:scroll;overflow-x:hidden;"></textarea>
+<div class="row mt-20" id="div1">
+    <form method="post">
+        <div class="col-md-8">
+            <p style="font-size:16px ">选择应用：
+            <select name="appname" id="appname">
+            {% for server_name in servers %}
+                <option>{{ server_name }}</option>
+             {% end %}
+            </select>
+            日志时间：<input id="hello" name="logtime" class="laydate-icon" />
+            <script>
+                laydate({
+                    elem: '#hello',
+                    event: 'focus'
+            });
+                laydate.skin('danlan');
+                $("#hello").val(laydate.now());
+            </script>
+            </p>
+        </div>
+        <div class="col-md-2">
+            <input class="btn btn-primary btn-block" type="submit" value="Download" />
+        </div>
+        <div class="col-md-2">
+        </div>
+    </form>
 </div>
 
-<div id="test">
-  <form class="form-horizontal" role="form">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h5 class="panel-title">>>输入</h5>
-      </div>
-      <div class="panel-body">
-        <div class="form-group">
-          <div class="col-md-8">
-            <input type="text" class="form-control" id="input_data" value="">
-          </div>
-        </div>
-        <div class="form-group">
-          <div class="col-md-8">
-            <button type="submit" class="btn btn-success" id="input_btn" onclick="send();">发送</button>
-          </div>
-        </div>
-      </div>
+<div class="row mt-20" id="time_filter_log">
+    <div class="col-md-8">
+    <p style="font-size:16px">Start time: <input id="start_time_hour" type="text" size="2">点<input id="start_time_min" type="text" size="2">
+        分 &nbsp &nbsp End time: <input id="end_time_hour" type="text" size="2">点<input id="end_time_min" type="text" size="2">分
+    </p>
     </div>
-  </form>
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h5 class="panel-title">>> 输出</h5>
+    <div class="col-md-2">
+        <button class="btn btn-primary btn-block" id="filter_log_button" onclick="filterLog_0()">Filter Log</button>
     </div>
-    <div class="panel-body">
-      <div id="message"></div>
+    <div class="col-md-2">
     </div>
-  </div>
 </div>
+<div class="row mt-20" id="tail_log">
+    <div class="col-md-6"></div>
+    <div class="col-md-2">
+        <button class="btn btn-primary btn-block" id="tail_log_button" onclick="startTail_0()">Tail Log</button>
+    </div>
+    <div class="col-md-2">
+        <button class="btn btn-primary btn-block" id="stop_tail_button" onclick="stopTail()">Stop Tail</button>
+    </div>
+    <div class="col-md-2">
+    </div>
+</div>
+<div class="row">
+    <textarea onscroll="scrollEventTest()" id="textarea" rows=10 cols=100 style="overflow-y:scroll;overflow-x:hidden;"></textarea>
+</div>
+</div>
+<script>
+        $("#textarea").val("{{ message }}");
+</script>
 </body>
 </html>

@@ -235,7 +235,9 @@ class SendHandler(websocket.WebSocketHandler):
                     start_time = message["start_time"]
                     end_time = message["end_time"]
                     if re.match(r'[0-9][0-9]:[0-9][0-9]',start_time) and re.match(r'[0-9][0-9]:[0-9][0-9]',end_time):
-                        print("start_time: %s, end_time: %s, filename: %s" % (start_time, end_time, result["content"][3]))
+                        print("start_time: %s, end_time: %s, ip: %s, filename: %s" % (start_time, end_time,
+                                                                                      result["content"][0],
+                                                                                      result["content"][3]))
                         myresult = self.myShowLog.executeNotBlockedCommand("/tmp/filtertomcatlines.py %s %s %s" %
                                                                            (message["start_time"],
                                                                             message["end_time"],

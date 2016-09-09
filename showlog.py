@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import re
 import time
 import paramiko
 from threading import Thread
@@ -15,7 +16,7 @@ priKey = '/home/%s/.ssh/id_rsa' % userName
 knownHostKey = '/home/%s/.ssh/known_hosts' % userName
 # print(priKey)
 TAILLINE = 200
-MORELINE = 200
+MORELINE = 100
 
 class UnexpectedEndOfStream(Exception):
     pass
@@ -36,6 +37,10 @@ class TailLog:
         self.tail_pid = ""
 
     # just establish the ssh connection
+    def is_connected(self):
+        transport = self.linkHandler.get_transport() if self.linkHandler else None
+        return transport and transport.is_active()
+
     def connect(self):
         try:
             self.linkHandler.connect(self.host, self.port, self.user, pkey=self.key, timeout=3)
@@ -67,12 +72,19 @@ class TailLog:
     # a general command execute for not blocking command
     def executeNotBlockedCommand(self, command):
         _, _, stdout, stderr = self._execute(command)
-        err_message = stderr.realine()
+        err_message = stderr.read().decode("utf-8")
         if err_message:
-            print(err_message)
-            return {"status": False, "err_message": err_message}
+            #print(err_message)
+            if re.search("No such file", err_message):
+                return {"status": False, "message": "****No Such Log File****"}
+            else:
+                return {"status": False, "message": err_message}
         else:
-            return {"status": True, "content": stdout.read()}
+            message = stdout.read().decode("utf-8")
+            if message:
+                return {"status": True, "message": message}
+            else:
+                return {"status": False, "message": "******* No Content in The Period Time ******"}
 
     # exectute tail -f file and recode the start line of tail
     def _tailFile(self, filename):
@@ -108,11 +120,11 @@ class TailLog:
             while True:
                 line = stdout.readline()
                 if line:
-                    file_to_write.write(str(line_number) + " " + line)
+                    file_to_write.write(str(line_number) + "    " + line)
                     line_number = line_number + 1
                 else:
                     print("End of stdout, this may caused by terminate of tail command!")
-                    file_to_write.write("********* End of stdout! this may be caused by terminate of tail command! *********")
+                    #file_to_write.write("********* End of stdout! this may be caused by terminate of tail command! *********")
                     self.tail_pid = ""
                     break
 
@@ -123,33 +135,36 @@ class TailLog:
             p.setDaemon(True)
             p.start()
         else:
+            file_to_write.write(result["err_message"])
             self.tail_pid = ""
 
     # get more back content of a file after tail -f command
     def getBackMoreContent(self):
+        #print("the line start: %s" % self.line_start)
         if self.line_start == 1:
-            return {"status": False, "err_message": "Already at the top of file"}
+            return {"status": "True", "message": "Already at the top of file\n"}
         elif self.line_start - 1 > MORELINE:
-            stdin, stdout, stderr = self.linkHandler.exec_command(
-                                                                  "sed -n %d,%dp %s" % (self.line_start - MORELINE,
-                                                                                        self.line_start - 1,
-                                                                                        self.fullFileName))
+            stdin, stdout, stderr = self.linkHandler.exec_command("awk 'NR>=%d&&NR<=%d{print NR\"    \"$0}' %s" %
+                                                                  (self.line_start - MORELINE,
+                                                                   self.line_start - 1,
+                                                                   self.fullFileName))
             err_message  = stderr.read()
             if err_message:
                 print(err_message)
-                return {"status": False, "err_message": err_message}
+                return {"status": False, "message": err_message}
             else:
                 self.line_start = self.line_start - MORELINE
-                return {"status": True, "content": stdout.read()}
+                return {"status": True, "message": stdout.read().decode("utf-8")}
         else:
-            stdin, stdout, stderr = self.linkHandler.exec_command("sed -n %d,%dp %s" %
+            stdin, stdout, stderr = self.linkHandler.exec_command("awk 'NR>=%d&&NR<=%d{print NR\"    \"$0}' %s"  %
                                                                   (1, self.line_start - 1, self.fullFileName))
             err_message  = stderr.read()
             if err_message:
                 print(err_message)
-                return {"status": False, "err_message": err_message}
+                return {"status": False, "message": err_message}
             else:
-                return {"status": True, "content": stdout.read()}
+                self.line_start =1
+                return {"status": True, "message": stdout.read().decode("utf-8")}
 
 
 #    def innerStartTail(self, myfilename):
@@ -235,9 +250,9 @@ if __name__ == '__main__':
     #mylog.closeTail()
     result = mylog.getBackMoreContent()
     if result["status"]:
-        print(result["content"])
+        print(result["message"])
     else:
-        print(result["err_message"])
+        print(result["message"])
     time.sleep(60)
     mylog.closeTail()
     mylog.close()
