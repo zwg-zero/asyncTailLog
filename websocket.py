@@ -20,19 +20,29 @@ server_list = yaml.load(open(os.path.join(current_path,'conf.yaml'), 'r'))['serv
 
 def getSshVariables(app_name, log_time):
     if app_name not in server_list.keys():
-        return {"status": False, "message": "The app: %s was not found" % app_name}
+        return {"status": False, "message": "The app: %s is not found\n" % app_name}
+    if not re.match(r'\d+-\d+-\d+', log_time):
+        print("The log_time: %s is invalid" % log_time)
+        return {"status": False, "message": "The log_time: %s is invalid\n" % log_time}
     today = datetime.date.isoformat(datetime.date.today())
-    if log_time:
-        if log_time != today:
-            log_name = os.path.join(server_list[app_name]["logpath"],server_list[app_name]["logname"]+"."+log_time)
-        else:
-            log_name = os.path.join(server_list[app_name]["logpath"],server_list[app_name]["logname"])
+    if re.search(r'access$', app_name):
+        log_name = server_list[app_name]["logname"]+"."+log_time+".log"
+        full_log_name = os.path.join(server_list[app_name]["logpath"], log_name)
         ip = server_list[app_name]["ip"]
         port = server_list[app_name]["port"]
         user = server_list[app_name]["user"]
-        return {"status": True, "content": (ip, port, user, log_name)}
+        return {"status": True, "content": (ip, port, user, full_log_name, log_name)}
     else:
-        return {"status": False, "message": "log_time can't be null!"}
+        if log_time != today:
+            log_name = server_list[app_name]["logname"]+"."+log_time
+            full_log_name = os.path.join(server_list[app_name]["logpath"],log_name)
+        else:
+            log_name = server_list[app_name]["logname"]
+            full_log_name = os.path.join(server_list[app_name]["logpath"],log_name)
+        ip = server_list[app_name]["ip"]
+        port = server_list[app_name]["port"]
+        user = server_list[app_name]["user"]
+        return {"status": True, "content": (ip, port, user, full_log_name, log_name)}
 
 
 #class FixShowlog(showlog.TailLog):
@@ -61,7 +71,13 @@ class IndexHandler(tornado.web.RequestHandler):
                 return False
 
     def get(self):
-        servers = server_list.keys()
+        try:
+            servers = server_list.keys().sort()
+            print(servers)
+        except:
+            servers = list(server_list.keys())
+            print(servers)
+            servers.sort()
         self.render("websocket.html", message='', servers=servers)
 
     @tornado.gen.coroutine
@@ -96,37 +112,36 @@ class IndexHandler(tornado.web.RequestHandler):
 
     @concurrent.run_on_executor
     def download(self, appname, logtime):
-        today = datetime.date.isoformat(datetime.date.today())
-        # print("logtime:%s, today: %s" % (logtime,  today))
-
-        if appname in server_list.keys():
-            if logtime != today:
-                real_logname = server_list[appname]["logname"] + "." + logtime
-                try:
-                    origin_size = os.path.getsize("/tmp/"+real_logname+"_"+appname)
-                    while True:
-                        time.sleep(1)
-                        last_size = os.path.getsize("/tmp/"+real_logname+"_"+appname)
-                        if last_size != origin_size:
-                            origin_size = last_size
-                        else:
-                            break
-                    return ("success",  "/tmp/"+real_logname+"_"+appname)
-                except OSError:
-                    pass
-            else:
-                real_logname = server_list[appname]["logname"]
+        result = getSshVariables(appname, logtime)
+        if result["status"]:
+            ip = result["content"][0]
+            port = result["content"][1]
+            user = result["content"][2]
+            full_log_name  = result["content"][3]
+            log_name  = result["content"][4]
+            local_saved_name = log_name + "_" + appname
+            full_local_saved_name = "/tmp/" + local_saved_name
             try:
-                print("The log's variables: %s" % server_list[appname])
-                result = subprocess.check_output("ssh %s@%s ls %s/%s" % (server_list[appname]["user"],
-                                                                         server_list[appname]["ip"],
-                                                                         server_list[appname]["logpath"],
-                                                                         real_logname), shell=True)
+                origin_size = os.path.getsize(full_local_saved_name)
+                while True:
+                    time.sleep(1)
+                    last_size = os.path.getsize(full_local_saved_name)
+                    if last_size != origin_size:
+                        origin_size = last_size
+                    else:
+                        break
+                return ("success",  full_local_saved_name)
+            except OSError:
+                pass
+            try:
+                print("The log's variables: %s, %s, %s, %s, %s" % (appname, user, ip, port, full_log_name))
+                result = subprocess.check_output("ssh -p %d %s@%s ls %s" % (port, user, ip, full_log_name), shell=True)
                 print("The result of remote ls command: %s" % result)
-                if re.match("%s/%s" % (server_list[appname]["logpath"], real_logname), result.decode("utf-8").strip()):
-                    if subprocess.call("scp %s@%s:%s/%s /tmp/%s" % (server_list[appname]["user"], server_list[appname]["ip"], server_list[appname]["logpath"], real_logname, real_logname+"_"+appname),shell=True) == 0:
-                        if os.path.exists("/tmp/%s" % real_logname+"_"+appname):
-                            return ("success", "/tmp/" + real_logname+"_"+appname)
+                if re.match(full_log_name, result.decode("utf-8").strip()):
+                    if subprocess.call("scp -P %d %s@%s:%s %s" % (port, user, ip, full_log_name,
+                                                                       full_local_saved_name),shell=True) == 0:
+                        if os.path.exists(full_local_saved_name):
+                            return ("success", full_local_saved_name)
                         else:
                             return ("fail", "through scp successful, but can not find tmp file on localhost!")
                     else:
@@ -135,7 +150,7 @@ class IndexHandler(tornado.web.RequestHandler):
                     return ("fail", "can not find then log on server!")
             except Exception as e:
                 print("Exception in scp log file process : %s" % str(e))
-                return ("fail", "no such log file!")
+                return ("fail", "no such log file!\n")
 
         else:
             return ("fail", "To get this appname's log was not suported!")
@@ -216,16 +231,23 @@ class SendHandler(websocket.WebSocketHandler):
                 if not self.myShowLog.connect():
                     self.write_message(json.dumps({"status":"error", "message": "error when connect to server"}))
                 else:
-                    print("start_time: %s, end_time: %s" % (message["start_time"], message["end_time"]))
-                    myresult = self.myShowLog.executeNotBlockedCommand("/tmp/filtertomcatlines.py %s %s %s" %
-                                                                       (message["start_time"],
-                                                                        message["end_time"],
-                                                                        result["content"][3]))
-                    if myresult["status"]:
-                        self.write_message(json.dumps({"status": "error", "message": ""}))
-                        self.write_message(json.dumps({"status": "filter_log", "message": myresult["message"]}))
+                    print("new ssh session started.")
+                    start_time = message["start_time"]
+                    end_time = message["end_time"]
+                    if re.match(r'[0-9][0-9]:[0-9][0-9]',start_time) and re.match(r'[0-9][0-9]:[0-9][0-9]',end_time):
+                        print("start_time: %s, end_time: %s, filename: %s" % (start_time, end_time, result["content"][3]))
+                        myresult = self.myShowLog.executeNotBlockedCommand("/tmp/filtertomcatlines.py %s %s %s" %
+                                                                           (message["start_time"],
+                                                                            message["end_time"],
+                                                                            result["content"][3]))
+                        if myresult["status"]:
+                            self.write_message(json.dumps({"status": "error", "message": ""}))
+                            self.write_message(json.dumps({"status": "filter_log", "message": myresult["message"]}))
+                        else:
+                            self.write_message(json.dumps({"status": "error", "message": myresult["message"]}))
                     else:
-                        self.write_message(json.dumps({"status": "error", "message": myresult["message"]}))
+
+                        print("start_time and end_time check fail! start_time: %s, end_time: %s" % (start_time, end_time))
             else:
                 self.write_message(json.dumps({"status":"error","message": result["message"]}))
         else:
