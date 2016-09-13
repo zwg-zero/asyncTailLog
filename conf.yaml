@@ -184,7 +184,7 @@ server_list:
         port: 22
         user: zhouwg_7
         logpath: /app/ohg_web/logs
-        logname: ohuanggua.log
+        logname: web.log
     ohg-web-1-access:
         ip: 172.16.100.206
         port: 22
@@ -196,7 +196,7 @@ server_list:
         port: 22
         user: zhouwg_7
         logpath: /app/ohg_web/logs
-        logname: ohuanggua.log
+        logname: web.log
     ohg-web-2-access:
         ip: 172.16.100.207
         port: 22
