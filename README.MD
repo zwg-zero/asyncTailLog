@@ -3,7 +3,7 @@
 * 实时显示服务器上的log输出
 * 显示某个时间段的日志
 * 日志显示在textarea中，scrollbar到最底时显示区域会不断更新，不在最底下时显示区域不更新，
-内容更新scrollbar拉到最顶上时会向服务器请求前一段的日志内容
+内容更新, scrollbar拉到最顶上时会向服务器请求前一段的日志内容
 
 ### 使用主要的库
 * tornado paramiko threading 
