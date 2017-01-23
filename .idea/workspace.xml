@@ -1,13 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="5757a21f-fb6a-481e-afdf-c63b61dc0656" name="Default" comment="change filtertomcatcatlines.py to enable access log file filter">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/settings.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/template/login.html" />
+    <list default="true" id="5757a21f-fb6a-481e-afdf-c63b61dc0656" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/showlog.py" afterPath="$PROJECT_DIR$/showlog.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/template/websocket.html" afterPath="$PROJECT_DIR$/template/websocket.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/websocket.py" afterPath="$PROJECT_DIR$/websocket.py" />
     </list>
     <ignored path="socketAsynTest.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -39,11 +34,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="websocket.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="websocket.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/websocket.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="384">
               <caret line="16" column="0" selection-start-line="16" selection-start-column="0" selection-end-line="16" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="workspace.xml" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -474,7 +479,14 @@
       <option name="project" value="LOCAL" />
       <updated>1485050212091</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="change filtertomcatcatlines.py to enable access log file filter">
+      <created>1485150978449</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1485150978449</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TodoView">
@@ -493,7 +505,7 @@
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.12967034" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32929516" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24889868" sideWeight="0.5021978" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Version Control" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24889868" sideWeight="0.4978022" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24889868" sideWeight="0.4978022" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3280116" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.20470588" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -540,11 +552,11 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="add style websocket.html" />
-    <MESSAGE value="change filtertomcatcatlines.py to enable access log file filter" />
     <MESSAGE value="chang in conf.yaml" />
     <MESSAGE value="add width style on textarea to expand textarea to out div" />
     <MESSAGE value="added ','" />
-    <option name="LAST_COMMIT_MESSAGE" value="added ','" />
+    <MESSAGE value="change filtertomcatcatlines.py to enable access log file filter" />
+    <option name="LAST_COMMIT_MESSAGE" value="change filtertomcatcatlines.py to enable access log file filter" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -553,7 +565,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/template/index.html" />
     <entry file="file://$PROJECT_DIR$/conf.yaml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -961,6 +972,14 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="384">
           <caret line="16" column="0" selection-start-line="16" selection-start-column="0" selection-end-line="16" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
