@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 import os
 import re
 import json
@@ -9,7 +11,9 @@ import tornado.httpserver
 import tornado.web
 import tornado.gen
 import tornado.ioloop
+import tornado.escape
 from tornado import websocket
+import settings
 import showlog
 from concurrent.futures import ThreadPoolExecutor
 from tornado import concurrent
@@ -56,8 +60,47 @@ def getSshVariables(app_name, log_time):
 #            else:
 #                #writeobject.write_message("End of file or Error in reading file!\n")
 #                break
+class BaseHandler(tornado.web.RequestHandler):
+    def get_current_user(self):
+        return self.get_secure_cookie("user")
 
-class IndexHandler(tornado.web.RequestHandler):
+
+class LoginHandler(BaseHandler):
+    def get(self):
+        errorMessage = self.get_argument("error", "")
+        self.render("login.html", errormessage = errorMessage)
+
+    def check_permission(self, password, username):
+        if username == "admin" and password == "admin":
+            return True
+        return False
+
+    def post(self):
+        username = self.get_argument("username", "")
+        password = self.get_argument("password", "")
+        auth = self.check_permission(username, password)
+        if auth:
+            self.set_current_user(username)
+            self.redirect(self.get_argument("next", u"/"))
+        else:
+            errorMsg = u"?error=" + tornado.escape.url_escape("Login incorrect")
+            self.redirect(u"/auth/login/" + errorMsg)
+
+    def set_current_user(self, user):
+        if user:
+            self.set_secure_cookie("user", tornado.escape.json_encode(user))
+        else:
+            self.clear_cookie("user")
+
+
+class LogoutHandler(BaseHandler):
+    def get(self):
+        self.clear_cookie("user")
+        self.redirect(self.get_argument("next"), "/")
+        #self.redirect("/")
+
+
+class IndexHandler(BaseHandler):
     executor = ThreadPoolExecutor(max_workers=MAX_WORKERS)
 
     def validate_form(self, appname, logtime):
@@ -70,6 +113,7 @@ class IndexHandler(tornado.web.RequestHandler):
             else:
                 return False
 
+    @tornado.web.authenticated
     def get(self):
         try:
             servers = server_list.keys().sort()
@@ -81,6 +125,7 @@ class IndexHandler(tornado.web.RequestHandler):
         self.render("websocket.html", message='', servers=servers)
 
     @tornado.gen.coroutine
+    @tornado.web.authenticated
     def post(self):
         servers = server_list.keys()
         appname = self.get_argument("appname")
@@ -166,6 +211,9 @@ class FileLikeObject:
 
 class SendHandler(websocket.WebSocketHandler):
     clients = set()
+
+    def check_origin(self, origin):
+        return True
 
     def open(self):
         print("open a websocket")
@@ -268,11 +316,15 @@ if __name__ == '__main__':
     app = tornado.web.Application(
         handlers=[
             (r"/", IndexHandler),
-            (r"/send", SendHandler)
+            (r"/auth/login/", LoginHandler),
+            (r"/auth/logout/", LogoutHandler),
+            (r"/send/", SendHandler)
         ],
-        debug = False,
-        template_path = os.path.join(os.path.dirname(__file__), "template"),
-        static_path = os.path.join(os.path.dirname(__file__), "static")
+        debug = settings.DEBUG,
+        template_path = settings.TEMPLATE_PATH,
+        static_path = settings.STATIC_PATH,
+        cookie_secret = settings.COOKIE_SECRET,
+        login_url = "auth/login/"
     )
     http_server = tornado.httpserver.HTTPServer(app, xheaders=True)
     http_server.listen(8200)

@@ -118,10 +118,16 @@ class TailLog:
         def threadExecute(stdout, file_to_write):
             line_number = self.line_start
             while True:
+                #content = ""
+                #for line in iter(lambda: stdout.readline(2048), ""):
+                #    content = content + str(line_number) + "    " + line
+                #    line_number = line_number + 1
+                #    file_to_write.write(content)
+                #time.sleep(1)
                 line = stdout.readline()
                 if line:
                     file_to_write.write(str(line_number) + "    " + line)
-                    line_number = line_number + 1
+                    line_number += 1
                 else:
                     print("End of stdout, this may caused by terminate of tail command!")
                     #file_to_write.write("********* End of stdout! this may be caused by terminate of tail command! *********")
@@ -165,58 +171,6 @@ class TailLog:
             else:
                 self.line_start =1
                 return {"status": True, "message": stdout.read().decode("utf-8")}
-
-
-#    def innerStartTail(self, myfilename):
-##        except paramiko.ssh_exception.NoValidConnectionsError as e:
-#        stdin, stdout, stderr = self.linkHandler.exec_command('tail -5f %s' % self.fullFileName)
-#        errorMessage = stderr.read()
-#        if errorMessage:
-#            print("error when execute command: "+ errorMessage.decode("utf-8"))
-#        myfile = open(myfilename, "w")
-#        while True:
-#            line = stdout.readline()
-#            if line:
-#                myfile.write(line)
-#                myfile.flush()
-#            else:
-#                myfile.write("End of file or Error in reading file!\n")
-#                myfile.flush()
-#                break
-#                #time.sleep(0.2)
-
-#    def startTail(self, myfilename):
-#        self.p = Thread(target=self.innerStartTail, args=(myfilename, ))
-#        self.p.setDaemon(True)
-#        self.p.start()
-
-
-#    def _putResultIntoQueue(self):
-#        while True:
-#            line = self.stdout.readline()
-#            if line:
-#                self._q.put(line)
-#            else:
-#                raise UnexpectedEndOfStream()
-#
-#    def startTail(self):
-#        self._startTail()
-#        self._t = Thread(target=self._putResultIntoQueue)
-#        self._t.daemon = True
-#        self._t.start()
-#
-#    def readLine(self, timeout=None):
-#        try:
-#            return self._q.get(block=True, timeout=timeout)
-#        except Empty:
-#            return None
-#
-#    def readErr(self):
-#        mycontent = ""
-#        for line in iter(lambda: self.stderr.readline(2048), ""):
-#            mycontent = mycontent + line
-#        return content
-
 
 
 if __name__ == '__main__':
