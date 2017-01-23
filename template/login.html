@@ -3,32 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
+    <link href="http://cdn.bootcss.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="http://cdn.bootcss.com/bootstrap/3.2.0/css/bootstrap-theme.min.css" rel="stylesheet">
+    <script src="http://cdn.bootcss.com/jquery/2.1.1/jquery.min.js"></script>
+    <script src="http://cdn.bootcss.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <style type="text/css">
+        .fixed-form {
+            width: 200px;
+            margin-right: auto;
+            margin-left: auto;
+            margin-top: 50px;
+        }
+        .errormessage {
+            color: red;
+        }
+    </style>
 </head>
 <body>
-<div id="main-container">
-            <div id="main">
-                <div id="login-form">
+                <div id="login-form" class="fixed-form">
                     <form action="/auth/login/" method="post" id="login_form">
-                        <fieldset>
+                        <div class="form-group">
                             <label for="username">Username</label>
-                            <input autocapitalize="off" autocorrect="off" class="text-input" id="username" name="username" tabindex="1" type="text" value="">
-                        </fieldset>
-
-                        <fieldset>
-                            <label for="password">Password</label>
-                            <input class="text-input" id="password" name="password" tabindex="2" type="password" value="">
-                        </fieldset>
-                        <fieldset>
-                            <span class="errormessage">{{errormessage}}</span>
-                        </fieldset>
-
-                        <div id="form_btn">
-                            <input id="signin-btn" class="btn btn-blue" type="submit" value="Sign In" tabindex="3">
-                            <!-- <a href="/sb/"><input id="inscription-btn" class="btn btn-red" value="Inscription" tabindex="3"></a> -->
+                            <input class="form-control" id="username" name="username" type="text" placeholder="UserName">
                         </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input class="form-control" id="password" name="password" type="password" placeholder="Passowrd">
+                        </div>
+                        <div>
+                            <span class="errormessage">{{errormessage}}</span>
+                        </div>
+                        <input id="signin-btn" class="btn btn-primary btn-block" type="submit" value="Sign In" tabindex="3">
                     </form>
                 </div>
-            </div>
-        </div>
 </body>
 </html>

@@ -61,6 +61,7 @@ def getSshVariables(app_name, log_time):
 #                #writeobject.write_message("End of file or Error in reading file!\n")
 #                break
 class BaseHandler(tornado.web.RequestHandler):
+    @tornado.web.removeslash
     def get_current_user(self):
         return self.get_secure_cookie("user")
 
@@ -88,7 +89,7 @@ class LoginHandler(BaseHandler):
 
     def set_current_user(self, user):
         if user:
-            self.set_secure_cookie("user", tornado.escape.json_encode(user))
+            self.set_secure_cookie("user", tornado.escape.json_encode(user), expires_days=None)
         else:
             self.clear_cookie("user")
 
@@ -316,9 +317,9 @@ if __name__ == '__main__':
     app = tornado.web.Application(
         handlers=[
             (r"/", IndexHandler),
-            (r"/auth/login/", LoginHandler),
-            (r"/auth/logout/", LogoutHandler),
-            (r"/send/", SendHandler)
+            (r"/auth/login/*", LoginHandler),
+            (r"/auth/logout/*", LogoutHandler),
+            (r"/send/*", SendHandler)
         ],
         debug = settings.DEBUG,
         template_path = settings.TEMPLATE_PATH,

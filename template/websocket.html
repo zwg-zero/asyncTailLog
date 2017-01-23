@@ -98,7 +98,7 @@
     }
 
     function startWebSocket(){
-        ws = new WebSocket("ws://127.0.0.1:8200/send/");
+        ws = new WebSocket("ws://127.0.0.1:8200/send");
         is_scrollable = true;
         ws.onmessage = function(event) {
             var content = JSON.parse(event.data);
